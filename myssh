@@ -1,0 +1,96 @@
+#!/usr/bin/python3.6
+
+import os
+import sys
+from collections import OrderedDict
+
+##server_list dictionary: {server_id:["server_name","server_IP","server port","username"]}
+server_list=OrderedDict({
+  1:["server1","192.168.1.45","4545","user1"],
+  2:["server2","172.16.1.45","22","user3"],
+  3:["backup server","192.168.2.54","3267","user2"],
+  4:["git server","10.10.1.45","22","user1"],
+  })
+
+## Prints a table of servers's information
+def Print_Help():
+
+  print ("{:<11}{:<60}{:<18}{:<7}{:<15}".format('+---------+','-----------------------------------------------------------+','-----------------+','------+','-------------+'))
+  print ("{:<10}{:<25}{:<35}{:<18}{:<2}{:<5}{:<3}{:<11}{:<1}".format('|Server ID',"|",'Server Name','|Server IP Address','|','Port','|','Username',"|"))
+  print ("{:<11}{:<60}{:<18}{:<7}{:<15}".format('+---------+','-----------------------------------------------------------+','-----------------+','------+','-------------+'))
+
+  for server_id in server_list:
+    print("{:<5}{:<5}{:<60}{:<18}{:<1}{:<6}{:<1}{:<13}{:<1}".format("|", str(server_id),"|"+server_list[server_id][0],"|"+server_list[server_id][1],"|",server_list[server_id][2],"|",server_list[server_id][3],"|"))
+    print ("{:<11}{:<60}{:<18}{:<7}{:<15}".format('+---------+','-----------------------------------------------------------+','-----------------+','------+','-------------+'))
+  
+  return True
+
+## Make SSH Connection from server ID
+def SSH_Connect_ID(server_ID):
+  try:
+    id_=int(server_ID)
+    name_=server_list[id_][0]
+    ip_=server_list[id_][1]
+    port_=server_list[id_][2]
+    username_=server_list[id_][3]
+
+    print ("Connecting to server "+name_+" on port "+port_+" and username "+username_)
+    command_="ssh "+username_+"@"+ip_+ " -p" + port_
+    os.system(command_)
+
+  except Exception as err:   
+    print("Invalid server ID")
+
+## Make SSH Connection from server name
+def SSH_Connect_Name(server_name):
+  id_=""
+  for server_ in server_list:
+    if server_list[server_][0] == server_name:
+      id_=server_
+      break
+  if id_!="":
+    SSH_Connect_ID(id_)
+  else:
+    print("Invalid Server Name")
+
+## Make SSH Connection from IP address
+def SSH_Connect_IP(server_IP):
+  id_=""
+  for server_ in server_list:
+    if server_list[server_][1] == server_IP:
+      id_=server_
+      break
+  if id_!="":
+    SSH_Connect_ID(id_)
+  else:
+    print("Invalid IP address")
+      
+
+if __name__ == '__main__':
+  ## Check number of arguments
+  if len(sys.argv) > 3 or len(sys.argv) <= 1:
+    print ("Invalid number of arguments, to get help type 'myssh -h' or 'myssh --help'")
+    
+  ## Display help menu
+  elif sys.argv[1] == '-h' or sys.argv[1] == '--help':
+    print ("Usage: myssh [Option] <Argument>","\n")
+    print ("Options:","\n")
+    print ("{:<6}{:<7}{:<15}{:<30}".format("","--list","","Displays a table of available servers"))
+    print ("{:<6}{:<5}{:<17}{:<30}".format("","--id","Server ID","Connects via Server ID"))
+    print ("{:<6}{:<7}{:<15}{:<30}".format("","--name","Server Name","Connects via Server Name"))
+    print ("{:<6}{:<5}{:<17}{:<30}".format("","--ip","Server IP", "Connects via Server IP Address"))
+  
+  elif sys.argv[1]=='--list':
+    Print_Help()
+
+  elif len(sys.argv) > 2 and sys.argv[1]=='--id':
+    SSH_Connect_ID(sys.argv[2])
+  
+  elif len(sys.argv) > 2 and sys.argv[1]=='--name':
+    SSH_Connect_Name(sys.argv[2])
+  
+  elif len(sys.argv) > 2 and sys.argv[1]=='--ip':
+    SSH_Connect_IP(sys.argv[2])
+
+  else:
+    print("Invalid input. Please try 'myssh -h' or 'myssh --help'")
