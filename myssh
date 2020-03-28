@@ -13,7 +13,7 @@ server_list=OrderedDict({
   })
 
 ## Prints a table of servers's information
-def Print_Help():
+def Print_Server_Tabel():
 
   print ("{:<11}{:<60}{:<18}{:<7}{:<15}".format('+---------+','-----------------------------------------------------------+','-----------------+','------+','-------------+'))
   print ("{:<10}{:<25}{:<35}{:<18}{:<2}{:<5}{:<3}{:<11}{:<1}".format('|Server ID',"|",'Server Name','|Server IP Address','|','Port','|','Username',"|"))
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     print ("{:<6}{:<5}{:<17}{:<30}".format("","--ip","Server IP", "Connects via Server IP Address"))
   
   elif sys.argv[1]=='--list':
-    Print_Help()
+    Print_Server_Tabel()
 
   elif len(sys.argv) > 2 and sys.argv[1]=='--id':
     SSH_Connect_ID(sys.argv[2])
